@@ -1,0 +1,29 @@
+name: Akeyless secrets integration
+description: Sets up environment in Buildkite containing secrets from Akeyless.
+author: Dropbox
+requirements: 
+  - python3
+configuration:
+  properties:
+    audience:
+      type: string
+      description: "The audience for the Akeyless token. Defaults to 'buildkite'."
+      default: "buildkite"
+    akeyless_url:
+      type: string
+      description: "The URL of the Akeyless server. Defaults to https://api.akeyless.io'."
+      default: "https://api.akeyless.io"
+    auth_access_id:
+      type: string
+      description: "The Akeyless access ID for authentication."
+    auth_secret_name:
+      type: string
+      description: Agent secret name - if the auth access id is stored in an agent secret."
+    secrets:
+      type: object
+      description: "Mapping of env var to Akeyless paths - where each env var will receive the value of the Akeyless path."
+    store_token:
+      type: boolean
+      description: "Whether to store the Akeyless token in an environment variable."
+      default: false
+  additionalProperties: false
