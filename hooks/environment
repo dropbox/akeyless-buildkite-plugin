@@ -2,5 +2,51 @@
 
 set -euo pipefail
 
+install_macos_certificates() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "Detected macOS, checking SSL certificates..."
+        
+        # Try to find and run the Install Certificates command
+        # First, get the actual Python version being used
+        python_version=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+        echo "Detected Python version: $python_version"
+        
+        # Get the Python executable path to help locate the Install Certificates script
+        python_exec=$(python3 -c "import sys; print(sys.executable)")
+        echo "Python executable: $python_exec"
+        
+        # Try different common locations for the Install Certificates command
+        cert_command_paths=(
+            "/Applications/Python ${python_version}/Install Certificates.command"
+            "$(dirname "$python_exec")/../Resources/Install Certificates.command"
+            "$(dirname "$python_exec")/Install Certificates.command"
+            "/usr/local/lib/python${python_version}/site-packages/Install Certificates.command"
+        )
+        
+        cert_installed=false
+        for cert_command in "${cert_command_paths[@]}"; do
+            if [[ -f "$cert_command" ]]; then
+                echo "Found Install Certificates at: $cert_command"
+                echo "Running Install Certificates..."
+                if "$cert_command"; then
+                    echo "Successfully ran Install Certificates"
+                    cert_installed=true
+                    break
+                else
+                    echo "Warning: Install Certificates command failed"
+                fi
+            fi
+        done
+        
+        if [[ "$cert_installed" == "false" ]]; then
+            echo "No Install Certificates.command found for Python $python_version"
+            echo "SSL certificate verification may fail - consider manually running the Install Certificates command"
+        fi
+    fi
+}
+
+# Install certificates before running the Python script
+install_macos_certificates
+
 DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 python3 $DIR/../lib/environment.py
