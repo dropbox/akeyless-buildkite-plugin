@@ -150,7 +150,7 @@ def main() -> None:
     print("Retrieving secrets...")
     # Get the secret from Akeyless
     secret_data = {
-        "json": True,
+        "json": False,
         "token": token,
         "names": list(secret_dict.values()),
     }
